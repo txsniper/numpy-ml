@@ -41,9 +41,13 @@ class LinearRegression:
             has dimension `K`.
         """
         # convert X to a design matrix if we're fitting an intercept
+        # np.c_ : 按行连接两个矩阵, X: 原始特征 + 偏置
         if self.fit_intercept:
             X = np.c_[np.ones(X.shape[0]), X]
 
+        #  np.linalg.inv: 矩阵求逆矩阵, X.T * X 可逆
+        # pseudo_inverse: 伪逆
+        # 最小二乘法求解
         pseudo_inverse = np.linalg.inv(X.T @ X) @ X.T
         self.beta = np.dot(pseudo_inverse, y)
 
@@ -68,6 +72,7 @@ class LinearRegression:
         return np.dot(X, self.beta)
 
 
+# RidgeRegression: 在线性回归基础上加上L2正则化
 class RidgeRegression:
     def __init__(self, alpha=1, fit_intercept=True):
         r"""
@@ -124,6 +129,7 @@ class RidgeRegression:
         if self.fit_intercept:
             X = np.c_[np.ones(X.shape[0]), X]
 
+        # np.eye: 返回对角矩阵
         A = self.alpha * np.eye(X.shape[1])
         pseudo_inverse = np.linalg.inv(X.T @ X + A) @ X.T
         self.beta = pseudo_inverse @ y
@@ -228,6 +234,7 @@ class LogisticRegression:
             X = np.c_[np.ones(X.shape[0]), X]
 
         l_prev = np.inf
+        # 参数
         self.beta = np.random.rand(X.shape[1])
         for _ in range(int(max_iter)):
             y_pred = sigmoid(np.dot(X, self.beta))
@@ -255,7 +262,10 @@ class LogisticRegression:
         order = 2 if self.penalty == "l2" else 1
         norm_beta = np.linalg.norm(beta, ord=order)
         
+        # 利用bool 索引选择成员: "y==1"的下标去y_pred中选择元素
         nll = -np.log(y_pred[y == 1]).sum() - np.log(1 - y_pred[y == 0]).sum()
+
+        # 正则化损失
         penalty = (gamma / 2) * norm_beta ** 2 if order == 2 else gamma * norm_beta
         return (penalty + nll) / N
 
