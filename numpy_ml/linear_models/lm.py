@@ -352,6 +352,7 @@ class LogisticRegression:
         norm_beta = np.linalg.norm(beta, ord=order)
         
         # 利用bool 索引选择成员: "y==1"的下标去y_pred中选择元素
+
         nll = -np.log(y_pred[y == 1]).sum() - np.log(1 - y_pred[y == 0]).sum()
 
         # 正则化损失
